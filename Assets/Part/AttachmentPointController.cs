@@ -30,6 +30,11 @@ public class AttachmentPointController : MonoBehaviour {
     }
   }
 
+  public void AttachToPoint(AttachmentPointController attachmentPoint) {
+    attachmentPoint.attachedPart = parentPart;
+    AttachToPart(attachmentPoint.parentPart);
+  }
+
   public void AttachToPart(PartController part) {
     attachedPart = part;
     var joint = parentPart.gameObject.AddComponent<FixedJoint2D>();
