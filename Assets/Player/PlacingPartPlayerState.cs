@@ -23,6 +23,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
 
     if (buildingState.placingPart) {
       if (Input.GetKeyDown(KeyCode.R)) buildingState.placementRotation *= Quaternion.Euler(0, 0, -90);
+      if (Input.GetKeyDown(KeyCode.F)) buildingState.placementRotation *= Quaternion.Euler(0, 180, 0);
       buildingState.placingPart.transform.position = mousePosition;
       buildingState.placingPart.transform.rotation = buildingState.placementRotation;
 
@@ -85,6 +86,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
 
     buildingState.placingPart.transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, closestRaycastHit.normal));
     buildingState.placingPart.transform.position = (Vector3)closestRaycastHit.point + buildingState.placingPart.transform.rotation * closestAttachmentPoint.offset;
+    buildingState.placingPart.transform.rotation *= Quaternion.Euler(buildingState.placementRotation.eulerAngles.y, 0, 0);
 
     return (closestAttachmentPoint, closestRaycastHit.collider.GetComponent<PartController>(), null);
   }
