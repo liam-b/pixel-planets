@@ -21,11 +21,11 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
       buildingState.placingPart.transform.position = mousePosition;
       buildingState.placingPart.transform.rotation = buildingState.placementRotation;
 
-      var isPartSnapped = false;
-      if (buildingState.placingPart.isStackAttachable) isPartSnapped = SnapStackGhostPart();
-      else isPartSnapped = SnapSurfaceGhostPart();
+      var (attachmentPoint, attachmentPart) = buildingState.placingPart.isStackAttachable ? SnapPartToStack() : SnapPartToSurface();
 
-      if (isPartSnapped && Input.GetMouseButtonDown(0)) {
+      if (attachmentPart && Input.GetMouseButtonDown(0)) {
+        attachmentPoint.AttachToPart(attachmentPart);
+
         buildingState.placingPart.SetMode(PartMode.Default);
         buildingState.placingPart = null;
         animator.SetTrigger("DeselectPart");
@@ -41,22 +41,22 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
     buildingState.placingPart = null;
   }
 
-  bool SnapStackGhostPart() {
-    var closestAttachmentPointPair = FindClosestAttachmentPointPair();
-    if (closestAttachmentPointPair.Item3 > 0.25f) return false;
+  (AttachmentPointController, PartController) SnapPartToStack() {
+    var (sourcePoint, destinationPoint, distance) = FindClosestAttachmentPointPair();
+    if (distance > 0.25f) return (null, null);
 
-    var attachmentPointOffset = Abs(closestAttachmentPointPair.Item1.transform.localPosition + (Vector3)closestAttachmentPointPair.Item1.offset);
-    buildingState.placingPart.transform.position = closestAttachmentPointPair.Item2.transform.position + closestAttachmentPointPair.Item2.transform.rotation * attachmentPointOffset;
+    var attachmentPointOffset = Abs(sourcePoint.transform.localPosition + (Vector3)sourcePoint.offset);
+    buildingState.placingPart.transform.position = destinationPoint.transform.position + destinationPoint.transform.rotation * attachmentPointOffset;
 
     var currentRotation = buildingState.placingPart.transform.rotation.eulerAngles.z;
-    var targetRotation = closestAttachmentPointPair.Item2.transform.parent.rotation.eulerAngles.z;
+    var targetRotation = destinationPoint.transform.parent.rotation.eulerAngles.z;
     var rotationDifference = (targetRotation - currentRotation) % 180;
     buildingState.placingPart.transform.rotation *= Quaternion.Euler(0, 0, rotationDifference);
 
-    return true;
+    return (destinationPoint, buildingState.placingPart);
   }
 
-  bool SnapSurfaceGhostPart() {
+  (AttachmentPointController, PartController) SnapPartToSurface() {
     var surfaceAttachmentPoints = buildingState.placingPart.GetAttachmentPoints<SurfaceAttachmentPointController>();
 
     float closestAttachmentDistance = float.MaxValue;
@@ -74,12 +74,12 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
     }
 
     var currentPartRotation = buildingState.placingPart.transform.rotation * Vector2.right;
-    if (!closestAttachmentPoint || Vector2.Dot(closestRaycastHit.normal, currentPartRotation) < 0) return false;
+    if (!closestRaycastHit || Vector2.Dot(closestRaycastHit.normal, currentPartRotation) < 0) return (null, null);
 
     buildingState.placingPart.transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, closestRaycastHit.normal));
     buildingState.placingPart.transform.position = (Vector3)closestRaycastHit.point + buildingState.placingPart.transform.rotation * closestAttachmentPoint.offset;
 
-    return true;
+    return (closestAttachmentPoint, closestRaycastHit.collider.GetComponent<PartController>());
   }
 
   (AttachmentPointController, AttachmentPointController, float) FindClosestAttachmentPointPair() {
