@@ -7,9 +7,11 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
 
   void OnStateEnter(Animator animator) {
     if (!buildingState) buildingState = animator.GetBehaviour<BuildingPlayerState>();
-    var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+    var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     buildingState.placingPart = Instantiate(buildingState.selectedPart, mousePosition, buildingState.placementRotation).GetComponent<PartController>();
+
+    PartController.GetAllParts().ForEach(part => part.SetMode(PartMode.Build));
     buildingState.placingPart.SetMode(PartMode.BuildGhost);
   }
 
@@ -37,6 +39,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
   }
 
   void OnStateExit(Animator animator) {
+    PartController.GetAllParts().ForEach(part => part.SetMode(PartMode.Default));
     if (buildingState.placingPart) Destroy(buildingState.placingPart.gameObject);
     buildingState.placingPart = null;
   }
