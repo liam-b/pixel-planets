@@ -94,6 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27603ab7cbf14495e9fde1263b901598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stackSnappingDistance: 0.3
+  surfaceSnappingDistance: 0.3
 --- !u!1102 &-5276516221909139676
 AnimatorState:
   serializedVersion: 5
@@ -274,10 +276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4893bd9982840bebd038bfff5a8b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  partPrefab: {fileID: 3091253972985928292, guid: f6822753d1a5f4fa79b055c592627010,
-    type: 3}
-  ghostPart: {fileID: 0}
-  ghostRotation: {x: 0, y: 0, z: 0, w: 0}
+  partPrefabs: []
+  selectedPart: {fileID: 0}
+  placingPart: {fileID: 0}
+  placementRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1101 &2167892239944902968
 AnimatorStateTransition:
   m_ObjectHideFlags: 1

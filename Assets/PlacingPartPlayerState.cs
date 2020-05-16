@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlacingPartPlayerState : StateMachineBehaviour {
+  public float stackSnappingDistance;
+  public float surfaceSnappingDistance;
+
   BuildingPlayerState buildingState;
 
   void OnStateEnter(Animator animator) {
@@ -46,7 +49,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
 
   (AttachmentPointController, PartController) SnapPartToStack() {
     var (sourcePoint, destinationPoint, distance) = FindClosestAttachmentPointPair();
-    if (distance > 0.25f) return (null, null);
+    if (distance > stackSnappingDistance) return (null, null);
 
     var attachmentPointOffset = Abs(sourcePoint.transform.localPosition + (Vector3)sourcePoint.offset);
     buildingState.placingPart.transform.position = destinationPoint.transform.position + destinationPoint.transform.rotation * attachmentPointOffset;
@@ -67,7 +70,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
     AttachmentPointController closestAttachmentPoint = null;
     foreach (var attachmentPoint in surfaceAttachmentPoints) {
       Vector2 rayOrigin = attachmentPoint.LocalOffsetFromMouse();
-      var hit = Physics2D.Raycast(rayOrigin, attachmentPoint.Normal(), 0.3f);
+      var hit = Physics2D.Raycast(rayOrigin, attachmentPoint.Normal(), surfaceSnappingDistance);
 
       if (hit && hit.distance < closestAttachmentDistance) {
         closestAttachmentDistance = hit.distance;

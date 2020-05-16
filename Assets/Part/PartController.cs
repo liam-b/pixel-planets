@@ -13,6 +13,7 @@ public class PartController : MonoBehaviour {
 
   PartMode mode;
   new Rigidbody2D rigidbody;
+  new Collider2D collider;
   SpriteRenderer spriteRenderer;
 
   public static List<PartController> GetAllParts() {
@@ -22,6 +23,7 @@ public class PartController : MonoBehaviour {
 
   void Awake() {
     rigidbody = GetComponent<Rigidbody2D>();
+    collider = GetComponent<Collider2D>();
     spriteRenderer = GetComponent<SpriteRenderer>();
     isStackAttachable = attachmentPoints.Find(point => point is StackAttachmentPointController);
   }
@@ -41,12 +43,14 @@ public class PartController : MonoBehaviour {
       case PartMode.BuildGhost:
         spriteRenderer.color = new Color(1f, 1f, 1f, 0.4f);
         spriteRenderer.sortingLayerName = "Ghost";
+        collider.enabled = false;
         foreach (var attachmentPoint in attachmentPoints) attachmentPoint.SetMode(mode);
         break;
 
       default:
         spriteRenderer.color = Color.white;
         spriteRenderer.sortingLayerName = "Default";
+        collider.enabled = true;
         foreach (var attachmentPoint in attachmentPoints) attachmentPoint.SetMode(mode);
         break;
     }
