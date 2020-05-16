@@ -29,7 +29,7 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
       var (attachmentDestination, attachmentPart, attachmentSource) = buildingState.placingPart.isStackAttachable ? SnapPartToStack() : SnapPartToSurface();
 
       if (attachmentDestination && Input.GetMouseButtonDown(0)) {
-        if (attachmentPart) attachmentDestination.AttachToPart(buildingState.placingPart);
+        if (attachmentPart) attachmentDestination.AttachToPart(attachmentPart);
         else attachmentDestination.AttachToPoint(attachmentSource);
 
         buildingState.placingPart.SetMode(PartMode.Default);
