@@ -28,6 +28,18 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!114 &-8869788020233516414
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948ae6a83e4bd4ed387a2fb3a201d8d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1107 &-7914512028155305939
 AnimatorStateMachine:
   serializedVersion: 5
@@ -42,10 +54,10 @@ AnimatorStateMachine:
     m_Position: {x: 300, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -528399295913289535}
-    m_Position: {x: 300, y: 210, z: 0}
+    m_Position: {x: 70, y: 210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5276516221909139676}
-    m_Position: {x: 610, y: 210, z: 0}
+    m_Position: {x: 350, y: 280, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -94,6 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27603ab7cbf14495e9fde1263b901598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rootAttachmentPointPrefab: {fileID: 4789447456877844083, guid: fc914577a51084d3baddb8ae094ebd10,
+    type: 3}
   stackSnappingDistance: 0.3
   surfaceSnappingDistance: 0.3
 --- !u!1102 &-5276516221909139676
@@ -246,6 +260,18 @@ AnimatorController:
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
   - m_Name: DeselectPart
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: SelectPartAsRoot
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: DeselectPartAsRoot
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
