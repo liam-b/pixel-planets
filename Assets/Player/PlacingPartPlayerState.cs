@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlacingPartPlayerState : StateMachineBehaviour {
+  public GameObject rootAttachmentPointPrefab;
   public float stackSnappingDistance;
   public float surfaceSnappingDistance;
 
   BuildingPlayerState buildingState;
+  GameObject rootAttachmentPoint;
 
   void OnStateEnter(Animator animator) {
     if (!buildingState) buildingState = animator.GetBehaviour<BuildingPlayerState>();
@@ -27,16 +29,16 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
       buildingState.placingPart.transform.position = mousePosition;
       buildingState.placingPart.transform.rotation = buildingState.placementRotation;
 
-      var (attachmentDestination, attachmentPart, attachmentSource) = buildingState.placingPart.isStackAttachable ? SnapPartToStack() : SnapPartToSurface();
+      if (!rootAttachmentPoint) {
+        var (attachmentDestination, attachmentPart, attachmentSource) = buildingState.placingPart.isStackAttachable ? SnapPartToStack() : SnapPartToSurface();
+        if (attachmentDestination && Input.GetMouseButtonDown(0)) {
+          if (attachmentPart) attachmentDestination.AttachToPart(attachmentPart);
+          else attachmentDestination.AttachToPoint(attachmentSource);
+          PlacePart(animator);
+        }
+    }
 
-      if (attachmentDestination && Input.GetMouseButtonDown(0)) {
-        if (attachmentPart) attachmentDestination.AttachToPart(attachmentPart);
-        else attachmentDestination.AttachToPoint(attachmentSource);
-
-        buildingState.placingPart.SetMode(PartMode.Default);
-        buildingState.placingPart = null;
-        animator.SetTrigger("DeselectPart");
-      }
+      UpdateRootSelection(animator);
     }
 
     if (Input.GetKeyDown(KeyCode.Escape)) animator.SetTrigger("DeselectPart");
@@ -47,6 +49,31 @@ public class PlacingPartPlayerState : StateMachineBehaviour {
     PartController.GetAllParts().ForEach(part => part.SetMode(PartMode.Default));
     if (buildingState.placingPart) Destroy(buildingState.placingPart.gameObject);
     buildingState.placingPart = null;
+  }
+
+  void UpdateRootSelection(Animator animator) {
+    if (Input.GetKeyDown(KeyCode.LeftShift)) rootAttachmentPoint = Instantiate(rootAttachmentPointPrefab, buildingState.placingPart.transform, false);
+
+    if (rootAttachmentPoint && Input.GetMouseButtonDown(0)) {
+      PlacePart(animator);
+      Destroy(rootAttachmentPoint);
+      rootAttachmentPoint = null;
+    }
+
+    if (Input.GetKeyUp(KeyCode.LeftShift)) {
+      Destroy(rootAttachmentPoint);
+      rootAttachmentPoint = null;
+    }
+  }
+
+  PartController PlacePart(Animator animator) {
+    buildingState.placingPart.SetMode(PartMode.Default);
+    buildingState.placingPart.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+    var part = buildingState.placingPart;
+    buildingState.placingPart = null;
+    animator.SetTrigger("DeselectPart");
+
+    return part;
   }
 
   (AttachmentPointController, PartController, AttachmentPointController) SnapPartToStack() {
